@@ -1,22 +1,53 @@
+
 import pygame
 pygame.init()
 
-winWidth, winHeight = 500, 500
-
+winWidth, winHeight = 500, 480
 window = pygame.display.set_mode((winWidth,winHeight))# Creates the window
-
 pygame.display.set_caption('Main Window')# Window name
 
-x, y = 50,50# Place where the character is created
-width,height = 40,60# Character size
+x, y = 50,400# Place where the character is created
+width,height = 64,64# Character size
 velo = 5# Character velocity
 
-run = True
-jump = False
-jumpHeight = 10
+run:bool = True
+jump:bool = False
+jumpHeight:int = 10
+left:bool = False
+right:bool = False
+walkCount = 0
+clock = pygame.time.Clock()
+
+
+walkRight:list = [pygame.image.load('sprites/R1.png'), pygame.image.load('sprites/R2.png'), pygame.image.load('sprites/R3.png'), pygame.image.load('sprites/R4.png'), pygame.image.load('sprites/R5.png'), pygame.image.load('sprites/R6.png'), pygame.image.load('sprites/R7.png'), pygame.image.load('sprites/R8.png'), pygame.image.load('sprites/R9.png')]
+walkLeft:list = [pygame.image.load('sprites/L1.png'), pygame.image.load('sprites/L2.png'), pygame.image.load('sprites/L3.png'), pygame.image.load('sprites/L4.png'), pygame.image.load('sprites/L5.png'), pygame.image.load('sprites/L6.png'), pygame.image.load('sprites/L7.png'), pygame.image.load('sprites/L8.png'), pygame.image.load('sprites/L9.png')]
+bg = pygame.image.load('sprites/bg.jpg')
+char = pygame.image.load('sprites/standing.png')
+
+
+def redrawGameWindow():
+    global walkCount
+    window.blit(bg, (0,0))# Draws the background
+
+    if walkCount + 1 >= 27:
+        walkCount = 0
+    
+    if left:
+        window.blit(walkLeft[walkCount//3],(x,y))
+        walkCount += 1
+    elif right:
+        window.blit(walkRight[walkCount//3],(x,y))
+        walkCount += 1
+    else:
+        window.blit(char, (x,y))
+
+    pygame.display.update()
+
+
 
 while run:# Mainloop
-    pygame.time.delay(50)# Equivilent of a tick in mc. In MS.
+    #pygame.time.delay(37)# Equivilent of a tick in mc. In MS.
+    clock.tick(27)# 27 fps
     # Events = Keyboard/mouse etc
 
     for event in pygame.event.get(): # Keyboard/mouse movements that have occured in this tick
@@ -27,15 +58,16 @@ while run:# Mainloop
 
     if keys[pygame.K_LEFT] and x > velo:# Ensure player can't exit the boundry
         x -= velo# Moves it by 5. same as c#
-    if keys[pygame.K_RIGHT] and x < winWidth - width - velo:
+        left,right = True, False
+    
+    elif keys[pygame.K_RIGHT] and x < winWidth - width - velo:
         # Character would otherwise be just 1 character outside the width
         x += velo
+        right,left = True, False
+    else:
+        right,left = False, False
+        walkCount = 0
     if (not jump):
-            
-        if keys[pygame.K_UP] and y > velo:
-            y -= velo
-        if keys[pygame.K_DOWN] and y < 500 - height - velo:
-            y += velo
         if keys[pygame.K_SPACE]:
             jump = True
         '''Uses a quadratic equation, f(k), to move the character in an arc
@@ -56,8 +88,6 @@ while run:# Mainloop
             jump = False
             jumpHeight = 10
             
-    window.fill((0,0,0)) #Gets rid of the old stuff?
-    pygame.draw.rect(window, (255,0,0), (x,y,width,height))# Creates a rectangle. More in website
-    pygame.display.update()# Refresh screen. Same as C#
+    redrawGameWindow()
 
 pygame.quit()
