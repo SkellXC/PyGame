@@ -73,7 +73,7 @@ while run:# Mainloop
         '''Uses a quadratic equation, f(k), to move the character in an arc
         jump is 20 iterations long. for each iteration N, move f(N) positions in the y
         direction. For the first half, move it upwards and in the second half move it back
-        down (hence why nec becomes negative)
+        down (hence why neg becomes negative)
         '''
 
     else:
